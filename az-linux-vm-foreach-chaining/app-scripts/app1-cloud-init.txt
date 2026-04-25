@@ -1,0 +1,43 @@
+#cloud-config
+package_update: true
+package_upgrade: false
+
+packages:
+  - apache2
+  - curl
+
+write_files:
+  - owner: root:root
+    permissions: '0644'
+    path: /var/www/html/index.html
+    content: |
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Terraform Hands-on - APP-1</title>
+      </head>
+      <body>
+        <h1>Welcome to Terraform Hands-on - APP-1</h1>
+        <p>Default website deployed during VM provisioning using cloud-init.</p>
+      </body>
+      </html>
+
+  - owner: root:root
+    permissions: '0644'
+    path: /var/www/html/app1/index.html
+    content: |
+      <!DOCTYPE html>
+      <html>
+      <body style="background-color:rgb(250, 210, 210);">
+        <h1>Welcome to Terraform Hands on Demo - APP-1</h1>
+        <p>Terraform Demo</p>
+        <p>Application Version: V1</p>
+        <p>This web app was deployed during Azure VM provisioning using cloud-init.</p>
+      </body>
+      </html>
+
+runcmd:
+  - mkdir -p /var/www/html/app1
+  - systemctl enable apache2
+  - systemctl restart apache2
+  - [bash, -c, 'curl -H "Metadata:true" --noproxy "*" "http://169.254.169.254/metadata/instance?api-version=2020-09-01" -o /var/www/html/app1/metadata.html']
